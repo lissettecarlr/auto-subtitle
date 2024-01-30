@@ -1,0 +1,8 @@
+{
+    "chat_url" : "https://run/v1",
+    "chat_key": "sk-US",
+    "baidu_appid": "",
+    "baidu_appkey": "",
+    "tencent_appid": "",
+    "tencent_secretKey":""
+}
