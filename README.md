@@ -1,17 +1,17 @@
 # 字幕生成器
 
-使用faster-whisper本地模型提取音频，生成srt和ass字幕文件。支持gpt等在线翻译，生成翻译后字幕文件。
+目标：一个能够自动生成媒体字幕的工具。
 
-## 功能
+目前功能：
 
-* 音频提取
-* 视频提取
-* srt字幕
-* ass字幕
-* gpt字幕翻译
-* 百度字幕翻译
-* 腾讯字幕翻译
-
+    * 输入视频
+    * 输入音频
+    * 输出srt字幕
+    * 输出ass字幕
+    * GPT字幕翻译
+    * 百度字幕翻译
+    * 腾讯字幕翻译
+    * 音频清洁
 
 ## 环境
 
@@ -35,35 +35,26 @@
     pip install openai>=1.8.0
     pip install pysubs2
     pip install -i https://mirrors.tencent.com/pypi/simple/ --upgrade tencentcloud-sdk-python
+
+    # 音频清洁
+    # https://github.com/karaokenerds/python-audio-separator
+    pip install audio-separator[gpu]
+    pip install audio-separator[cpu]
     ```
 
 
 ## 模型下载
 
-可以在huggingface上下载模型：[faster-whisper](https://huggingface.co/collections/guillaumekln/faster-whisper-64f9c349b3115b4f51434976)，然后将模型放如models目录下。
-也可以直接运行，这样会自动下载模型，但会被保存到你的huggingface缓存目录
+手动去[huggingface]((https://huggingface.co/collections/guillaumekln/faster-whisper-64f9c349b3115b4f51434976))下载模型，然后将模型放如models目录下，这里也提供一个[百度云](https://pan.baidu.com/s/1rRcSRhBpizuQo20qowG2UA?pwd=kuon)
 
-目前支持的模型有：
-* tiny
-* base
-* medium
-* small
-* large-v2
-* large-v3
-* tiny.en
-* base.en
-* medium.en
-* small.en
 
 ## 运行
 
 ```bash
-streamlit run web.py --server.port 1234
+streamlit run web.py --server.port 1234 --server.maxUploadSize 1000
 ```
 
-[![video](./file/1.png)](./file/demonstration_video.webm)
-
-![](./file/2.png)
+![演示视频](./file/1.mp4)
 
 ## 效果
 

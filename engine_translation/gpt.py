@@ -7,8 +7,8 @@ class GPT():
             base_url = base_url
         )
         
-        if model not in ["gpt-3.5-turbo","gpt-4"]:
-            raise Exception("model not supported")
+        # if model not in ["gpt-3.5-turbo","gpt-4"]:
+        #     raise Exception("model not supported")
         
         self.model = model
         self.temperature = temperature

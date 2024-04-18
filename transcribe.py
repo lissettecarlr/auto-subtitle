@@ -19,9 +19,10 @@ class Transcribe:
         torch.cuda.empty_cache()
 
     def run(self,file_name,audio_binary_io = None,language='ja',
-            beam_size = 5,is_vad_filter="False",
+            beam_size = 5,is_vad_filter=False,
             is_split = "No",split_method = "Modest",
-            sub_style = "default"):
+            sub_style = "default",
+            initial_prompt= None):
         '''
         beam_size：数值越高，在识别时探索的路径越多，这在一定范围内可以帮助提高识别准确性，但是相对的VRAM使用也会更高. 同时，Beam Size在超过5-10后有可能降低精确性，详情请见https://arxiv.org/pdf/2204.05424.pdf                                          
         is_vad_filter：使用VAD过滤。
@@ -34,6 +35,7 @@ class Transcribe:
             全部分割（Aggressive): 只要遇到空格即另起一行
         sub_style：字幕样式
             default
+        initial_prompt: 使用提示词能够提高输出质量,详情见： https://platform.openai.com/docs/guides/speech-to-text/prompting
         '''
         audio_name = os.path.splitext(os.path.basename(file_name))[0]   
 
@@ -46,11 +48,23 @@ class Transcribe:
             audio = audio_binary_io
 
         tic = time.time()
+        
+        # print("transcribe param")
+        # print(f"audio: {audio}")
+        # print(f"language: {language}")
+        # print(f"is_vad_filter: {is_vad_filter}")
+        # print(f"beam_size: {beam_size}")
+        # print(f"initial_prompt: {initial_prompt}")
+ 
         segments, info = self.model.transcribe(audio = audio,
                                         beam_size=beam_size,
                                         language=language,
                                         vad_filter=is_vad_filter,
-                                        vad_parameters=dict(min_silence_duration_ms=1000))
+                                        vad_parameters=dict(min_silence_duration_ms=1000),
+                                        initial_prompt = initial_prompt,
+                                        #word_timestamps=True,
+                                        #condition_on_previous_text=False,
+                                        )
 
         total_duration = round(info.duration, 2) 
         results= []
@@ -75,12 +89,12 @@ class Transcribe:
 
 
 if __name__ == "__main__":
-    test = Transcribe(model_name = r"D:\code\auto-subtitle\models\faster-whisper-small")
+    test = Transcribe(model_name = r"D:\code\auto-subtitle\models\faster-whisper-small",device="cpu")
     # 测试直接传入文件地址
     #test.run(file_name="./test.mp3")
 
     # 测试传入二进制
-    with open('./test.mp3', 'rb') as f:
+    with open('./file/test.mp3', 'rb') as f:
         test.run(file_name="test",audio_binary_io=f)
 
 

@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 # 自定义
-#temp/*.*
+temp/*.*
 file/config.json
 engine_translator/secret.yaml
 models
