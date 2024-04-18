@@ -54,7 +54,10 @@
 streamlit run web.py --server.port 1234 --server.maxUploadSize 1000
 ```
 
-![演示视频](./file/1.mp4)
+演示视频：
+<video src="https://github.com/lissettecarlr/auto-subtitle/assets/16299917/bd83db31-a830-441a-82ad-caccaa9c3833" controls="controls" width="100%" height="100%"></video>
+
+
 
 ## 效果
 
