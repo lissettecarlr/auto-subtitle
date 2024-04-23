@@ -102,11 +102,11 @@ def web_page():
             models_path = "./models" + "/faster-whisper-" + model_name
             #print(models_path)
             try:
-                if os.path.isfile(models_path):
+                if os.path.exists(models_path):
                     print("加载模型：{}".format(models_path))
                     st.session_state.transcribe = Transcribe(model_name=models_path,device=device_name)
                 else:
-                    print("加载模型：{}".format(model_name))
+                    print("加载hf模型：{}".format(model_name))
                     st.session_state.transcribe = Transcribe(model_name=model_name,device=device_name)
                 st.success("模型加载成功：{}".format(models_path))    
             except Exception as e:
