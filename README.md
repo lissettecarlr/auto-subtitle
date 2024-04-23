@@ -15,25 +15,34 @@
 
 ## 环境
 
-* torch（CUDA 11.8，其他版本去[官网](https://pytorch.org/get-started/locally/)找）
+* conda
     ```bash
-    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    conda create -n subtitle python=3.10
+    conda activate subtitle
     ```
 
-* 安装ffmpeg。
-    去[官网](https://ffmpeg.org/download.html#build-windows)下载，解压后将bin目录添加到环境变量，ubuntu可以直接apt安装。
-    然后安装ffmpeg-python
+* torch（CUDA 11.8，其他版本去[官网](https://pytorch.org/get-started/locally/)找）
+    ```bash
+    # GPU
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+    # CPU
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+    ```
+
+* 安装ffmpeg（windows）。
+    去[官网](https://ffmpeg.org/download.html#build-windows)下载，解压后将bin目录添加到环境变量
+
+* 安装ffmpeg（ubuntu）
     ```bash
     pip install ffmpeg-python
     ```
 
 * 其他依赖
     ```
-    pip install regex
-    pip install faster-whisper
-    pip install streamlit
-    pip install openai>=1.8.0
-    pip install pysubs2
+    pip install -r requirements.txt
+
+    # 腾讯翻译
     pip install -i https://mirrors.tencent.com/pypi/simple/ --upgrade tencentcloud-sdk-python
 
     # 音频清洁
@@ -45,8 +54,39 @@
 
 ## 模型下载
 
-手动去[huggingface]((https://huggingface.co/collections/guillaumekln/faster-whisper-64f9c349b3115b4f51434976))下载模型，然后将模型放入项目根目录下的models文件夹中，这里也提供一个[百度云](https://pan.baidu.com/s/1rRcSRhBpizuQo20qowG2UA?pwd=kuon)
+将下载的文件夹放入根目录的`models`文件夹中
 
+* 语音清洁相关模型
+    * [百度云](https://pan.baidu.com/s/1wDQ_I1NIL942o1Dm2XU8zg?pwd=kuon)，目前只使用了`UVR_MDXNET_Main.onnx`，可以只下载它，但是文件夹目录结构还是要的一样的
+ 
+* vad
+    * [百度云](https://pan.baidu.com/s/1gcEfO8pxqoZKIAW2SyzbKA?pwd=kuon)
+
+* whisper模型
+    * 可以使用时候自动下载，会被保存到huggingface的缓存目录中
+    * [百度云](https://pan.baidu.com/s/1NbutR2cHvHbboUy-QTg5zw?pwd=kuon)，这压缩包包含上面的所有模型
+    * [huggingface](https://huggihttps://huggingface.co/collections/guillaumekln/faster-whisper-64f9c349b3115b4f51434976)
+
+示例models目录结构
+```text
+│models
+|
+├───faster-whisper-large-v3
+│       .gitattributes
+│       config.json
+│       model.bin
+│       preprocessor_config.json
+│       README.md
+│       tokenizer.json
+│       vocabulary.json
+│
+│
+├───silero-vad-4.0
+│
+└───uvr5_weights
+        UVR_MDXNET_Main.onnx
+
+```
 
 ## 运行
 

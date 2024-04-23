@@ -102,7 +102,7 @@ def web_page():
             models_path = "./models" + "/faster-whisper-" + model_name
             #print(models_path)
             try:
-                if not os.path.isfile(models_path):
+                if os.path.isfile(models_path):
                     print("加载模型：{}".format(models_path))
                     st.session_state.transcribe = Transcribe(model_name=models_path,device=device_name)
                 else:

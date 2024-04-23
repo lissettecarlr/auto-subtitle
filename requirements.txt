@@ -1,0 +1,5 @@
+streamlit
+openai
+regex
+faster-whisper
+pysubs2
