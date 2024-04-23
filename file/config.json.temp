@@ -1,8 +1,15 @@
 {
-    "chat_url" : "https://run/v1",
-    "chat_key": "sk-US",
+    "chat_url" : "https://api/v1",
+    "chat_key": "sk-",
+    "chat_model_list":["gpt-3.5-turbo", "gpt-4"],
+    "chat_model_name":"gpt-4",
     "baidu_appid": "",
     "baidu_appkey": "",
     "tencent_appid": "",
-    "tencent_secretKey":""
+    "tencent_secretKey":"",
+    "model_name":"large-v3",
+    "model_list":["tiny","base","small","medium","large-v2","large-v3","tiny.en","base.en","medium.en","small.en"],
+    "media_type":"视频",
+    "vad_filter":"是"
 }
+

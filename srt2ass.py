@@ -26,7 +26,7 @@ def fileopen(input_file):
     return [srt_src, enc]
 
 
-def srt2ass(input_file,sub_style, is_split, split_method):
+def srt2ass(input_file,sub_style, is_split:bool, split_method:str):
     if '.ass' in input_file:
         return input_file
 
@@ -78,7 +78,7 @@ def srt2ass(input_file,sub_style, is_split, split_method):
             else:
                 if lineCount < 2:
                     dlg_string = line
-                    if is_split == "Yes" and split_method == 'Modest':
+                    if is_split == True and split_method == 'Modest':
                         # do not split if space proceed and followed by non-ASC-II characters
                         # do not split if space followed by word that less than 5 characters
                         split_string = re.sub(r'(?<=[^\x00-\x7F])\s+(?=[^\x00-\x7F])(?=\w{5})', r'|', dlg_string)
@@ -87,7 +87,7 @@ def srt2ass(input_file,sub_style, is_split, split_method):
                             dlgLines += (split_string.replace('|', "(adjust_required)\n" + dlgLines)) + "(adjust_required)"
                         else:
                             dlgLines += line
-                    elif is_split == "Yes" and split_method == 'Aggressive':
+                    elif is_split == True and split_method == 'Aggressive':
                         # do not split if space proceed and followed by non-ASC-II characters
                         # split at all the rest spaces
                         split_string = re.sub(r'(?<=[^\x00-\x7F])\s+(?=[^\x00-\x7F])', r'|', dlg_string)

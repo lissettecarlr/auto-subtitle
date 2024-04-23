@@ -45,7 +45,7 @@
 
 ## 模型下载
 
-手动去[huggingface]((https://huggingface.co/collections/guillaumekln/faster-whisper-64f9c349b3115b4f51434976))下载模型，然后将模型放如models目录下，这里也提供一个[百度云](https://pan.baidu.com/s/1rRcSRhBpizuQo20qowG2UA?pwd=kuon)
+手动去[huggingface]((https://huggingface.co/collections/guillaumekln/faster-whisper-64f9c349b3115b4f51434976))下载模型，然后将模型放入项目根目录下的models文件夹中，这里也提供一个[百度云](https://pan.baidu.com/s/1rRcSRhBpizuQo20qowG2UA?pwd=kuon)
 
 
 ## 运行

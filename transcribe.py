@@ -1,6 +1,4 @@
 # 字幕提取
-
-
 import torch
 # pip install faster-whisper
 from faster_whisper import WhisperModel
@@ -15,12 +13,15 @@ from srt2ass import srt2ass
 
 class Transcribe:
     def __init__(self,model_name="small",device='cuda') -> None:
-        self.model = WhisperModel(model_name,device=device)
+        self.model = WhisperModel(model_name,device=device,compute_type="float16")
         torch.cuda.empty_cache()
 
     def run(self,file_name,audio_binary_io = None,language='ja',
-            beam_size = 5,is_vad_filter=False,
-            is_split = "No",split_method = "Modest",
+            beam_size = 5,
+            is_vad_filter=False,
+            min_silence_duration_ms=500,
+            is_split = False,
+            split_method = "Modest",
             sub_style = "default",
             initial_prompt= None):
         '''
@@ -29,7 +30,7 @@ class Transcribe:
             使用[Silero VAD model](https://github.com/snakers4/silero-vad)以检测并过滤音频中的无声段落（推荐小语种使用）
             【注意】使用VAD filter有优点亦有缺点，请用户自行根据音频内容决定是否启用. [关于VAD filter](https://github.com/Ayanaminn/N46Whisper/blob/main/FAQ.md)
         is_split：是否使用空格将文本分割成多行
-            ["No","Yes"]
+            [True,False]
         split_method：分割方法
             普通分割（Modest)：当空格后的文本长度超过5个字符，则另起一行
             全部分割（Aggressive): 只要遇到空格即另起一行
@@ -48,31 +49,36 @@ class Transcribe:
             audio = audio_binary_io
 
         tic = time.time()
+
+        print("transcribe param")
+        print(f"audio: {audio}")
+        print(f"language: {language}")
+        print(f"is_vad_filter: {is_vad_filter}")
+        print(f"beam_size: {beam_size}")
+        print(f"initial_prompt: {initial_prompt}")
+
+        if is_vad_filter == False:
+            vad_parameters = None
+        else:
+            vad_parameters = dict(min_silence_duration_ms=min_silence_duration_ms)
         
-        # print("transcribe param")
-        # print(f"audio: {audio}")
-        # print(f"language: {language}")
-        # print(f"is_vad_filter: {is_vad_filter}")
-        # print(f"beam_size: {beam_size}")
-        # print(f"initial_prompt: {initial_prompt}")
- 
         segments, info = self.model.transcribe(audio = audio,
                                         beam_size=beam_size,
                                         language=language,
                                         vad_filter=is_vad_filter,
-                                        vad_parameters=dict(min_silence_duration_ms=1000),
+                                        vad_parameters=vad_parameters,
                                         initial_prompt = initial_prompt,
-                                        #word_timestamps=True,
+                                        word_timestamps=True,
                                         #condition_on_previous_text=False,
+                                        #no_speech_threshold=0.6,
                                         )
 
-        total_duration = round(info.duration, 2) 
         results= []
-        with tqdm(total=total_duration, unit=" seconds") as pbar:
+        with tqdm(total=round(info.duration, 2), unit=" seconds") as pbar:
             for s in segments:
                 segment_dict = {'start':s.start,'end':s.end,'text':s.text}
                 results.append(segment_dict)
-                segment_duration = s.end - s.start
+                segment_duration = round(s.end - s.start, 2)  
                 pbar.update(segment_duration)
         toc = time.time()
         subs = pysubs2.load_from_whisper(results)
@@ -89,13 +95,20 @@ class Transcribe:
 
 
 if __name__ == "__main__":
-    test = Transcribe(model_name = r"D:\code\auto-subtitle\models\faster-whisper-small",device="cpu")
+    test = Transcribe(model_name = r"D:\code\auto-subtitle\models\faster-whisper-large-v3",device="cuda")
     # 测试直接传入文件地址
     #test.run(file_name="./test.mp3")
 
     # 测试传入二进制
-    with open('./file/test.mp3', 'rb') as f:
-        test.run(file_name="test",audio_binary_io=f)
+    with open('./file/2.wav', 'rb') as f:
+        test.run(file_name="test",
+                 audio_binary_io=f,
+                 language="zh",
+                 #initial_prompt="简体中文",
+                 #is_vad_filter=True,
+                 #is_split=False
+        )
+
 
 
 

@@ -88,8 +88,8 @@ def web_page():
     else:
         st.session_state.model_list = ["tiny","base","small","medium","large-v2","large-v3",
                                         "tiny.en","base.en","medium.en","small.en"]
-        st.session_state.model_name = "base"
-        model_index = 1
+        st.session_state.model_name = "large-v2"
+        model_index = 5
 
     model_name = st.selectbox('模型选择：', st.session_state.model_list, index=model_index)
     device_list = ["cpu","cuda"]
@@ -206,21 +206,40 @@ def web_page():
     selected_language = st.selectbox('选择媒体语言', language,index=1)
     st.session_state.language = language_mapping[selected_language]
   
-
-    vad_filter = st.radio("是使用VAD（过滤音频中的无声段落,有时候无声段落会被识别出混乱语音）", ("是", "否"),horizontal=True,index=1)
-    if vad_filter == "是":
-        st.session_state.is_vad_filter = "True"
+    if st.session_state.config is not None:
+        vad_filter = st.session_state.config.get("vad_filter")
+        if vad_filter == "是":
+            vad_filter_index = 0
+        else:
+            vad_filter_index = 1
     else:
-        st.session_state.is_vad_filter = "False"
+        vad_filter_index = 1
 
-    st.session_state.is_split = st.radio("是否对文本进行分割（当单行显示文本过长时可开启）", ("是", "否"),horizontal=True,index=0)
-    if st.session_state.is_split == "是":
+    vad_filter = st.radio("是使用VAD（过滤音频中的无声段落,whisper模型在识别无声片段，会输出乱七八糟的内容，改项就是解决这个的）", ("是", "否"),horizontal=True,index=vad_filter_index)
+    
+    if "min_silence_duration_ms" not in st.session_state:
+        st.session_state.min_silence_duration_ms = None
+
+    if vad_filter == "是":
+        st.session_state.is_vad_filter = True
+        st.session_state.min_silence_duration_ms = st.number_input("最小静默时长（毫秒）", min_value=0, max_value=10000, value=500, step=100)
+    else:
+        st.session_state.is_vad_filter = False
+
+
+    is_split = st.radio("是否对文本进行分割（当单行显示文本过长时可开启）", ("是", "否"),horizontal=True,index=1)
+    if is_split == "是":
+        st.session_state.is_split = True
         st.session_state.split_method = st.selectbox('导出格式（Modest：当空格后的文本长度超过5个字符，则另起一行；Aggressive: 只要遇到空格即另起一行）', ["Modest","Aggressive"],index=0)
     else:
+        st.session_state.is_split = False
         st.session_state.split_method = "Modest"
 
     
-    st.session_state.prompt = st.text_input('请输入提示词（能够提升输出文本质量）：', '',placeholder="简体中文，讲课，中国近代史")
+    st.session_state.prompt = st.text_input('请输入提示词：', "",placeholder="简体中文")
+    if st.session_state.prompt == "":
+        st.session_state.prompt = None
+
     # 是否显示融合字幕后的视频
     if st.session_state.media_type == "视频":
         st.session_state.is_show_video = st.radio("是否显示翻译后的视频", ("是", "否"),horizontal=True,index=0)
@@ -300,49 +319,6 @@ def web_page():
 
 
 
-    # st.markdown("----")
-    # option = st.radio("选择来源", ("视频", "音频"),horizontal=True,index=1)
-    # if option == "视频":
-    #     input_audio = None
-    #     input_audio_name = None
-
-    #     input_file = st.file_uploader("上传视频：", type=["mp4", "avi", "mov", "mkv"])
-    #     if input_file is not None:
-    #         temp_input_video = "./temp/" + os.path.splitext(os.path.basename(input_file.name))[0]+"_temp.mp4"
-    #         # 判断文件是否存在
-    #         if not os.path.exists(temp_input_video):      
-    #             #temp_input_video = "./temp/input.mp4"
-    #             with open(temp_input_video, "wb") as f:
-    #                 f.write(input_file.read())
-    #         else:
-    #             print("文件:{} 已存在，无需创建".format(temp_input_video))
-
-    #         # 提取音频文件
-    #         temp_audio_path = "./temp/" + os.path.splitext(os.path.basename(input_file.name))[0]+".wav"
-    #         if not os.path.exists(temp_audio_path):
-    #             audio = ffmpeg.input(temp_input_video)
-    #             audio = ffmpeg.output(audio, temp_audio_path, acodec="pcm_s16le", ac=1, ar="16k")
-    #             ffmpeg.run(audio, overwrite_output=True)
-    #         else:
-    #             print("文件:{} 已存在，无需创建".format(temp_audio_path))
-                
-    #         st.write("提取音频：")
-    #         st.audio(temp_audio_path, format='audio/wav', start_time=0)
-    #         input_audio_name = temp_audio_path
-    #         input_audio = None
-
-    # elif option == "音频":
-    #     input_file = st.file_uploader("上传音频：", type=["mp3", "wav", "m4a"])
-    #     if input_file is not None:
-    #         # 读取二进制音频数据
-    #         bytes_data = input_file.read()
-    #         input_audio= io.BytesIO(bytes_data)
-    #         input_audio_name = input_file.name
-    #     else:
-    #         input_audio = None
-    #         input_audio_name = None
-
-
     st.markdown("----")
     if st.button("开始转换"):
         if st.session_state.transcribe is None:
@@ -364,6 +340,7 @@ def web_page():
                                                       audio_binary_io = input_audio,
                                                       language=st.session_state.language,
                                                       is_vad_filter = st.session_state.is_vad_filter,
+                                                      min_silence_duration_ms = st.session_state.min_silence_duration_ms,
                                                       is_split = st.session_state.is_split,
                                                       split_method = st.session_state.split_method,
                                                       initial_prompt=st.session_state.prompt
