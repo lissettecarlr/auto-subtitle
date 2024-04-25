@@ -1,6 +1,6 @@
 # 字幕生成器
 
-目标：一个能够自动生成媒体字幕的工具。
+一个能够自动生成媒体字幕的工具
 
 目前功能：
 
@@ -35,7 +35,7 @@
 
 * 安装ffmpeg（ubuntu）
     ```bash
-    pip install ffmpeg-python
+    apt install ffmpeg
     ```
 
 * 其他依赖
@@ -99,7 +99,9 @@ streamlit run web.py --server.port 1234 --server.maxUploadSize 1000
 
 
 
+
 ## 效果
+
 
 ### 葬送的芙莉蓮 OP 主題曲 -「勇者」/ YOASOBI
 

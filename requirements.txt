@@ -3,3 +3,4 @@ openai
 regex
 faster-whisper
 pysubs2
+ffmpeg-python
